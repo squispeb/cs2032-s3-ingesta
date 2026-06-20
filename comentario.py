@@ -9,7 +9,7 @@ s3 = boto3.client('s3')
 def lambda_handler(event, context):
     # Entrada (json)
     print(event)
-    body = json.loads(event['body'])
+    body = event['body'] if isinstance(event['body'], dict) else json.loads(event['body'])
     tenant_id = body['tenant_id']
     texto = body['texto']
     nombre_tabla = os.environ["TABLE_NAME"]
