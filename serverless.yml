@@ -15,25 +15,26 @@ provider:
           - s3:PutObject
         Resource: arn:aws:s3:::${self:service}-${self:provider.stage}-ingesta/*
   environment:
+    TABLE_NAME: ${sls:stage}-t_comentarios
     BUCKET_NAME: ${self:service}-${self:provider.stage}-ingesta
 
 functions:
-  comentario:
+  crear:
     handler: comentario.lambda_handler
     package:
       include:
         - ./**
     events:
       - http:
-          path: /comentario
+          path: /comentario/crear
           method: post
           cors: true
           integration: lambda
   scrape_table:
-    handler: scrap_table.lambda_handler  # Asegúrarse de que el nombre del archivo y la función coincidan
+    handler: scrap_table.lambda_handler
     package:
       include:
-        - ./**  # Incluir todo el contenido del directorio
+        - ./**
     events:
       - http:
           path: /scrape/table
@@ -43,16 +44,20 @@ functions:
 
 resources:
   Resources:
-    TablaWebScrapping:
+    TablaComentarios:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: TablaWebScrapping
+        TableName: ${self:provider.environment.TABLE_NAME}
         AttributeDefinitions:
-          - AttributeName: id
+          - AttributeName: tenant_id
+            AttributeType: S
+          - AttributeName: uuid
             AttributeType: S
         KeySchema:
-          - AttributeName: id
+          - AttributeName: tenant_id
             KeyType: HASH
+          - AttributeName: uuid
+            KeyType: RANGE
         BillingMode: PAY_PER_REQUEST
     IngestaBucket:
       Type: AWS::S3::Bucket
