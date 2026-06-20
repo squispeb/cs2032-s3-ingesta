@@ -10,11 +10,6 @@ provider:
   timeout: 30
   iam:
     role: arn:aws:iam::381327556601:role/LabRole
-    statements:
-      - Effect: Allow
-        Action:
-          - s3:PutObject
-        Resource: arn:aws:s3:::${self:service}-${sls:stage}-ingesta/*
   environment:
     TABLE_NAME: ${sls:stage}-t_comentarios
     BUCKET_NAME: ${self:service}-${sls:stage}-ingesta
@@ -63,4 +58,4 @@ resources:
     IngestaBucket:
       Type: AWS::S3::Bucket
       Properties:
-        Bucket: ${self:service}-${sls:stage}-ingesta
+        BucketName: ${self:service}-${sls:stage}-ingesta
