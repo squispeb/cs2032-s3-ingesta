@@ -4,6 +4,7 @@ service: api-web-scraping
 provider:
   name: aws
   runtime: python3.12
+  stage: ${opt:stage, 'dev'}
   # Default memory size for functions (default: 1024MB)
   memorySize: 1024
   timeout: 30
@@ -13,10 +14,10 @@ provider:
       - Effect: Allow
         Action:
           - s3:PutObject
-        Resource: arn:aws:s3:::${self:service}-${self:provider.stage}-ingesta/*
+        Resource: arn:aws:s3:::${self:service}-${sls:stage}-ingesta/*
   environment:
     TABLE_NAME: ${sls:stage}-t_comentarios
-    BUCKET_NAME: ${self:service}-${self:provider.stage}-ingesta
+    BUCKET_NAME: ${self:service}-${sls:stage}-ingesta
 
 functions:
   crear:
@@ -62,4 +63,4 @@ resources:
     IngestaBucket:
       Type: AWS::S3::Bucket
       Properties:
-        Bucket: ${self:service}-${self:provider.stage}-ingesta
+        Bucket: ${self:service}-${sls:stage}-ingesta
